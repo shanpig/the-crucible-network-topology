@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: backend-demo-svc
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: backend-demo
   ports:
     - name: http
       port: 4002
       targetPort: 4000
+      nodePort: 30034
