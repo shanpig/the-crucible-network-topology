@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    container_name: ha-demo-backend
+    environment:
+      - PORT=4000
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    container_name: ha-demo-frontend
+    environment:
+      - PORT=3000
+      # IMPORTANT: inside docker network, use service name "backend"
+      - BACKEND_URL=http://localhost:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
