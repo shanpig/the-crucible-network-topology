@@ -7,11 +7,11 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());  // 👈 enable CORS for all origins
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "backend", pid: process.pid, time: new Date().toISOString() });
+  res.json({ ok: true, service: "backend" , pod: process.env.HOSTNAME, pid: process.pid, time: new Date().toISOString() });
 });
 
 app.get("/api/hello", (_req, res) => {
-  res.json({ msg: "Hello from backend!", pid: process.pid, time: new Date().toISOString() });
+  res.json({ msg: "Hello from backend!", pod: process.env.HOSTNAME, pid: process.pid, time: new Date().toISOString() });
 });
 
 // Intentional crash endpoint

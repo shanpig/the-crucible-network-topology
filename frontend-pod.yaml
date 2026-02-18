@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod-1
+  labels:
+    app: frontend-demo
+spec:
+  containers:
+    - name: frontend
+      image: the-crucible_frontend
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: PORT
+          value: "3000"
+        # - name: BACKEND_URL
+        #   value: "http://localhost:4003"
+      ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod-2
+  labels:
+    app: frontend-demo
+spec:
+  containers:
+    - name: frontend
+      image: the-crucible_frontend
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: PORT
+          value: "3000"
+        # - name: BACKEND_URL
+        #   value: "http://localhost:4003"
+      ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod-3
+  labels:
+    app: frontend-demo
+spec:
+  containers:
+    - name: frontend
+      image: the-crucible_frontend
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: PORT
+          value: "3000"
+        # - name: BACKEND_URL
+        #   value: "http://localhost:4003"
+      ports:
+        - containerPort: 3000
