@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>HA Demo: Crashable Frontend/Backend</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px; max-width: 760px; margin: auto; }
+      button { padding: 12px 16px; margin: 8px 8px 8px 0; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
+      .row { margin-top: 16px; }
+      pre { background: #f6f6f6; padding: 12px; border-radius: 12px; overflow: auto; }
+      .ok { color: #0a7; }
+      .bad { color: #c20; }
+    </style>
+  </head>
+  <body>
+    <h1>High Availability Demo</h1>
+    <p>
+      This page is served by the <b>frontend server</b>. It can also call the <b>backend server</b>.
+      We’ll intentionally crash either server to demonstrate why replicas matter.
+    </p>
+
+    <div class="row">
+      <button id="hello">Call backend /api/hello</button>
+      <button id="crash-backend">💥 Crash backend</button>
+      <button id="crash-frontend">💥 Crash frontend</button>
+    </div>
+
+    <div class="row">
+      <div id="status"></div>
+      <pre id="log"></pre>
+    </div>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const logEl = document.getElementById("log");
+
+      function setStatus(msg, cls) {
+        statusEl.className = cls || "";
+        statusEl.textContent = msg;
+      }
+      function log(obj) {
+        logEl.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+      }
+
+      async function getBackendUrl() {
+        const res = await fetch("/config");
+        const cfg = await res.json();
+        return cfg.backendUrl;
+      }
+
+      document.getElementById("hello").onclick = async () => {
+        try {
+          const backendUrl = await getBackendUrl();
+          const res = await fetch(`${backendUrl}/api/hello`);
+          const data = await res.json();
+          setStatus("✅ Backend responded", "ok");
+          log(data);
+        } catch (e) {
+          setStatus("❌ Backend call failed (maybe it crashed?)", "bad");
+          log(String(e));
+        }
+      };
+
+      document.getElementById("crash-backend").onclick = async () => {
+        try {
+          const backendUrl = await getBackendUrl();
+          const res = await fetch(`${backendUrl}/crash`, { method: "POST" });
+          const data = await res.json();
+          setStatus("⚠️ Crash request sent to backend. Try calling hello again.", "");
+          log(data);
+        } catch (e) {
+          setStatus("❌ Could not send crash request to backend", "bad");
+          log(String(e));
+        }
+      };
+
+      document.getElementById("crash-frontend").onclick = async () => {
+        try {
+          const res = await fetch(`/crash`, { method: "POST" });
+          const data = await res.json();
+          setStatus("⚠️ Frontend server is about to crash. Refresh will fail until it restarts.", "");
+          log(data);
+          // The server will exit shortly after responding.
+        } catch (e) {
+          setStatus("❌ Could not send crash request to frontend", "bad");
+          log(String(e));
+        }
+      };
+
+      // Show initial config
+      (async () => {
+        const backendUrl = await getBackendUrl();
+        setStatus(`Frontend OK. Backend configured as: ${backendUrl}`, "");
+        log({ note: "Use buttons above to test." });
+      })();
+    </script>
+  </body>
+</html>
