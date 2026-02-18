@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend-demo
+  template:
+    metadata:
+      labels:
+        app: frontend-demo
+    spec:
+      containers:
+        - name: frontend
+          image: the-crucible_frontend
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "3000"
+          ports:
+            - containerPort: 3000

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-demo
+  template:
+    metadata:
+      labels:
+        app: backend-demo
+    spec:
+      containers:
+        - name: backend
+          image: the-crucible_backend
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "4000"
+          ports:
+            - containerPort: 4000
